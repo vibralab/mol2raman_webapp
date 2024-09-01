@@ -227,14 +227,19 @@ if st.button('Predict'):
 
         dtf_prediction = post_precessing_data(dtf_raman_spectra)
 
-        # Convert DataFrame to CSV
-        csv_data = convert_df_to_csv(dtf_prediction)
-
         # Plot the Raman Spectra
         raman_spectra = dtf_prediction['raman_pred'].iloc[0]
         len_sp = len(dtf_prediction['raman_pred'].iloc[0])
         x = np.linspace(500, 3500, len_sp)
         plot_spectrum(raman_spectra, 500, 3500, rescale=3)
+
+        # Convert DataFrame to CSV
+        lst_down = np.linspace(501, 3500, len(dtf_prediction['raman_pred'].iloc[0]))
+        dtf_download = dtf_prediction[['smile', 'raman_pred']]
+        dtf_download = pd.DataFrame(dtf_download.raman_pred.tolist(), index=dtf_prediction.smile)
+        dtf_download.columns = [int(c) for c in lst_down]
+        dtf_download = dtf_download.reset_index()
+        csv_data = dtf_download.to_csv(sep=';', decimal=',', index=False)
 
         # Download button
         st.download_button(
