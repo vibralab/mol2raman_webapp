@@ -51,7 +51,7 @@ def post_precessing_data(df):
     leng = list(range(501, 3500, 2))
     conv = make_conv_matrix(std_dev=10, frequencies=leng)
 
-    result_df['raman_pred'] = result_df.apply(
+    result_df['raman_pred_conv'] = result_df.apply(
         lambda row: convolve_with_lorentzian(row['raman_pred'], lorentzian_kernel), axis=1)
 
     return result_df

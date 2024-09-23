@@ -18,8 +18,12 @@ from google_drive import get_model_from_drive
 
 @st.cache_resource()
 def load_model():
-    drive_file_id_up = '1DgoulgBzQZE_FG-qYJ2Cn8Arznh2yTQo'
-    drive_file_id_down = '1auEXPQo133aL1hSAArKQb7WC7vEcm0uQ'
+    drive_file_id_up = '13ecZhyiJLO7TacDNW5OUS3kjMw7FcXsm'
+    drive_file_id_down = '1_m1DR-oxYqjgughNfKt_n083aRa2lLkA'
+
+    # drive_file_id_up = '1DgoulgBzQZE_FG-qYJ2Cn8Arznh2yTQo'
+    # drive_file_id_down = '1auEXPQo133aL1hSAArKQb7WC7vEcm0uQ'
+
     print('Loading model...')
     best_model_ckpt_up = get_model_from_drive(drive_file_id_up)
     print('Loading model...')
@@ -114,8 +118,8 @@ def predict_raman_spectra(smile, model_down, model_up, mc_sam=10):
     num_peaks = []
 
     model_name = 'GINEGLOBAL'
-    ext_feat_up = ["raman_pred_num_peak_up", "MOLECULAR_FINGERPRINT"]
-    ext_feat_down = ["raman_pred_num_peak_down", "MOLECULAR_FINGERPRINT"]
+    ext_feat_up = ["raman_pred_num_peak_up", "MOLECULAR_FINGERPRINT", "MOLECULAR_FINGERPRINT_MORGAN"]
+    ext_feat_down = ["raman_pred_num_peak_down", "MOLECULAR_FINGERPRINT", "MOLECULAR_FINGERPRINT_MORGAN"]
     params = {
         "patience": 15,
         "batch_size": 1,
@@ -131,7 +135,7 @@ def predict_raman_spectra(smile, model_down, model_up, mc_sam=10):
         "model_dense_neurons": 128}
     arch_params= {
         "dim_h": 256,
-        "additional_feature_size": 2049}
+        "additional_feature_size": 4097}
 
     # for str_dataset in ['down', 'up']:
     for str_dataset, best_model_ckpt in zip(['down', 'up'], [model_down, model_up]):
@@ -203,7 +207,7 @@ model_down, model_up = load_model()
 st.title('Prediction of number of  raman peaks starting from a SMILE')
 st.write('Enter the SMILE representation of a molecule')
 
-smile = st.text_area('Insert SMILE')
+smile = st.text_area('Inser t SMILE')
 
 # Prediction and display result
 if st.button('Predict'):
@@ -228,26 +232,47 @@ if st.button('Predict'):
         dtf_prediction = post_precessing_data(dtf_raman_spectra)
 
         # Plot the Raman Spectra
-        raman_spectra = dtf_prediction['raman_pred'].iloc[0]
-        len_sp = len(dtf_prediction['raman_pred'].iloc[0])
+        raman_spectra = dtf_prediction['raman_pred_conv'].iloc[0]
+        len_sp = len(dtf_prediction['raman_pred_conv'].iloc[0])
         x = np.linspace(500, 3500, len_sp)
-        plot_spectrum(raman_spectra, 500, 3500, rescale=3)
+        plot_spectrum(raman_spectra, 500, 3500, rescale=3, fill=False, line_width=12)
 
         # Convert DataFrame to CSV
         lst_down = np.linspace(501, 3500, len(dtf_prediction['raman_pred'].iloc[0]))
-        dtf_download = dtf_prediction[['smile', 'raman_pred']]
-        dtf_download = pd.DataFrame(dtf_download.raman_pred.tolist(), index=dtf_prediction.smile)
+
+        # Download convoluted Raman Spectra
+        dtf_download = dtf_prediction[['smile', 'raman_pred_conv']]
+        dtf_download = pd.DataFrame(dtf_download.raman_pred_conv.tolist(), index=dtf_prediction.smile)
         dtf_download.columns = [int(c) for c in lst_down]
         dtf_download = dtf_download.reset_index()
-        csv_data = dtf_download.to_csv(sep=';', decimal=',', index=False)
 
-        # Download button
-        st.download_button(
-            label="Download data as CSV",
-            data=csv_data,
-            file_name='raman_spectrum.csv',
-            mime='text/csv',
-        )
+        # Download peaks Raman Spectra
+        dtf_download_peaks = dtf_prediction[['smile', 'raman_pred']]
+        dtf_download_peaks = pd.DataFrame(dtf_download_peaks.raman_pred.tolist(), index=dtf_prediction.smile)
+        dtf_download_peaks.columns = [int(c) for c in lst_down]
+        dtf_download_peaks = dtf_download_peaks.reset_index()
+
+        csv_data_raman_spectra = dtf_download.to_csv(sep=';', decimal=',', index=False)
+        csv_data_raman_peaks = dtf_download_peaks.to_csv(sep=';', decimal=',', index=False)
+
+        # Download buttons
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.download_button(
+                label="Download Predicted Raman Peaks as CSV",
+                data=csv_data_raman_peaks,
+                file_name='raman_peaks.csv',
+                mime='text/csv'
+            )
+
+        with col2:
+            st.download_button(
+                label="Download Predicted Convoluted Spectra as CSV",
+                data=csv_data_raman_spectra,
+                file_name='raman_spectrum.csv',
+                mime='text/csv'
+            )
 
         # st.write(f'Predicted fingerprint region peaks: {dtf_number_of_peaks.raman_pred_num_peak_down.iloc[0]}')
         # st.write(f'Predicted CH region peaks: {dtf_number_of_peaks.raman_pred_num_peak_up.iloc[0]}')

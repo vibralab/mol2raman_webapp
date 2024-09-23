@@ -367,7 +367,7 @@ def sim_dir(arr_true, arr_pred, conv, freq, lor_kernel):
     return sim_resc
 
 
-def plot_spectrum(pred, start, stop, marks=False, fill=True, rescale=1):
+def plot_spectrum(pred, start, stop, marks=False, fill=True, rescale=1, line_width=4):
     mycolors = ['tab:red', 'tab:blue', 'tab:green', 'tab:orange', 'tab:brown', 'tab:grey', 'tab:pink', 'tab:olive']
     x = np.linspace(start, stop, len(pred))
     peaks_pred, _ = scipy.signal.find_peaks(pred)
@@ -377,19 +377,21 @@ def plot_spectrum(pred, start, stop, marks=False, fill=True, rescale=1):
     fig, ax = plt.subplots(1, 1, figsize=(16, 9), dpi=300)
 
     if fill:
-        ax.fill_between(x, y1=pred, y2=0, label='Predicted Spectra', alpha=0.5, color=mycolors[0], linewidth=4 / 3.75)
+        ax.fill_between(x, y1=pred, y2=0, label='Predicted Spectra', alpha=0.5, color=mycolors[0], linewidth=line_width / 3.75)
+    else:
+        ax.plot(x, pred, label='Predicted Spectra', color=mycolors[0], linewidth=line_width / 3.75)
 
     # Mark peaks if `marks` is True
     if marks:
         ax.scatter(x[peaks_pred], pred[peaks_pred], color='red', marker='x', s=25, label='Predicted Local Maxima')
 
     # Decorations
-    ax.set_title('Predicted Raman Spectrum', fontsize=18 / 3.75)
-    ax.set_xlabel('Raman shift ($cm^{-1}$)', fontsize=25 / 3.75)
-    ax.set_ylabel('Intensity (a.u.)', fontsize=25 / 3.75)
-    ax.legend(loc='best', fontsize=18 / 3.75)
-    ax.tick_params(axis='x', labelsize=25 / 3.75)
-    ax.tick_params(axis='y', labelsize=25 / 3.75)
+    # ax.set_title('Predicted Raman Spectrum', fontsize=18 / 3.75)
+    ax.set_xlabel('Raman shift ($cm^{-1}$)', fontsize=80 / 3.75)
+    ax.set_ylabel('Intensity (a.u.)', fontsize=80 / 3.75)
+    ax.legend(loc='best', fontsize=40 / 3.75)
+    ax.tick_params(axis='x', labelsize=60 / 3.75)
+    ax.tick_params(axis='y', labelsize=60 / 3.75)
     ax.set_xlim(500, 3500)
     ax.set_ylim(bottom=0)
 
@@ -405,3 +407,12 @@ def plot_spectrum(pred, start, stop, marks=False, fill=True, rescale=1):
 
     # Show plot with Streamlit
     st.pyplot(fig)
+    # st.caption("Predicted Raman Spectrum")
+    st.markdown(
+        """
+        <div style='text-align: center; margin-top: -15px;'>
+            Predicted Raman Spectrum
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
