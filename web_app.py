@@ -207,7 +207,7 @@ model_down, model_up = load_model()
 st.title('Prediction of number of  raman peaks starting from a SMILE')
 st.write('Enter the SMILE representation of a molecule')
 
-smile = st.text_area('Inser t SMILE')
+smile = st.text_area('Insert SMILE')
 
 # Prediction and display result
 if st.button('Predict'):
