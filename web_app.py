@@ -204,10 +204,10 @@ def is_valid_smile(smile: str) -> bool:
 
 
 model_down, model_up = load_model()
-st.title('Prediction of number of  raman peaks starting from a SMILE')
-st.write('Enter the SMILE representation of a molecule')
+st.title('Prediction of Raman spectra starting from a SMILE')
+#st.write('Enter the SMILE representation of a molecule')
 
-smile = st.text_area('Insert SMILE')
+smile = st.text_area('Enter the SMILE representation of a molecule')
 
 # Prediction and display result
 if st.button('Predict'):
