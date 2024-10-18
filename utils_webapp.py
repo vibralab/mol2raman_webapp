@@ -411,7 +411,7 @@ def plot_spectrum(pred, start, stop, marks=False, fill=True, rescale=1, line_wid
     st.markdown(
         """
         <div style='text-align: center; margin-top: -15px;'>
-            Predicted Raman Spectrum
+            Predicted Raman Spectra
         </div>
         """,
         unsafe_allow_html=True
