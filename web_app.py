@@ -235,7 +235,7 @@ if st.button('Predict'):
         raman_spectra = dtf_prediction['raman_pred_conv'].iloc[0]
         len_sp = len(dtf_prediction['raman_pred_conv'].iloc[0])
         x = np.linspace(500, 3500, len_sp)
-        plot_spectrum(raman_spectra, 500, 3500, rescale=3, fill=False, line_width=12)
+        plot_spectrum(raman_spectra, 500, 3500, rescale=1, fill=False, line_width=12)
 
         # Convert DataFrame to CSV
         lst_down = np.linspace(501, 3500, len(dtf_prediction['raman_pred'].iloc[0]))
