@@ -28,6 +28,7 @@ def load_model():
     best_model_ckpt_up = get_model_from_drive(drive_file_id_up)
     print('Loading model...')
     best_model_ckpt_down = get_model_from_drive(drive_file_id_down)
+    
     return best_model_ckpt_down, best_model_ckpt_up
 
 
