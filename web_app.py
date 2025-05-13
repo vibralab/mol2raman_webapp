@@ -18,17 +18,17 @@ from google.oauth2 import service_account
 
 
 @st.cache_resource()
-def load_model(credentials):
+def load_model():
     drive_file_id_up = '13ecZhyiJLO7TacDNW5OUS3kjMw7FcXsm'
     drive_file_id_down = '1_m1DR-oxYqjgughNfKt_n083aRa2lLkA'
 
     # drive_file_id_up = '1DgoulgBzQZE_FG-qYJ2Cn8Arznh2yTQo'
     # drive_file_id_down = '1auEXPQo133aL1hSAArKQb7WC7vEcm0uQ'
-
+    credentials = load_credentials()
     print('Loading model...')
-    best_model_ckpt_up = get_model_from_drive(drive_file_id_up)
+    best_model_ckpt_up = get_model_from_drive(drive_file_id_up, credentials)
     print('Loading model...')
-    best_model_ckpt_down = get_model_from_drive(drive_file_id_down)
+    best_model_ckpt_down = get_model_from_drive(drive_file_id_down, credentials)
     
     return best_model_ckpt_down, best_model_ckpt_up
 
@@ -204,10 +204,12 @@ def is_valid_smile(smile: str) -> bool:
     mol = Chem.MolFromSmiles(smile)
     return mol is not None
 
-credentials = service_account.Credentials.from_service_account_info(
-    st.secrets["gcp_service_account"]
-)
-model_down, model_up = load_model(credentials)
+def load_credentials():
+    return service_account.Credentials.from_service_account_info(
+        st.secrets["gcp_service_account"]
+    )
+
+model_down, model_up = load_model()
 st.title('Prediction of Raman spectra starting from a SMILE')
 #st.write('Enter the SMILE representation of a molecule')
 
