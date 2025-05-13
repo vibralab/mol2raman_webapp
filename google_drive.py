@@ -8,11 +8,7 @@ import torch
 # file_id = '1HeokPU-JNVJuPOQwcFwzk3if-NwnuLGs'
 # file_id = "1OS1nEZ5IUYkwAkSK4lWL8b27a4G3YkPK"
 
-def get_model_from_drive(file_id):
-    # Load credentials from Streamlit secrets
-    credentials = service_account.Credentials.from_service_account_info(
-        st.secrets["gcp_service_account"]
-    )
+def get_model_from_drive(file_id, credentials):
 
     # Build the Drive service
     service = build('drive', 'v3', credentials=credentials)

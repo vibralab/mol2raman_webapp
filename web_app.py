@@ -14,10 +14,11 @@ from rdkit.Chem import Draw
 import matplotlib.pyplot as plt
 from data_postprocessing import post_precessing_data
 from google_drive import get_model_from_drive
+from google.oauth2 import service_account
 
 
 @st.cache_resource()
-def load_model():
+def load_model(credentials):
     drive_file_id_up = '13ecZhyiJLO7TacDNW5OUS3kjMw7FcXsm'
     drive_file_id_down = '1_m1DR-oxYqjgughNfKt_n083aRa2lLkA'
 
@@ -203,8 +204,10 @@ def is_valid_smile(smile: str) -> bool:
     mol = Chem.MolFromSmiles(smile)
     return mol is not None
 
-
-model_down, model_up = load_model()
+credentials = service_account.Credentials.from_service_account_info(
+    st.secrets["gcp_service_account"]
+)
+model_down, model_up = load_model(credentials)
 st.title('Prediction of Raman spectra starting from a SMILE')
 #st.write('Enter the SMILE representation of a molecule')
 
